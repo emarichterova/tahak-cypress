@@ -1,0 +1,52 @@
+-NPM Scripts and Cypress CLI-
+
+npx cypress open –> open cypress
+npx cypress run –> run all of the tests
+npx cypress run --browser chrome –> run in chrome browser (it opens the browser)
+npx cypress run --spec "cypress/integration/secondTest.spec.js" –> run the chosen test
+don't want recording of the test? cypress.json–> "video": false
+
+you can make your own commands –> package.json and than under scripts
+    eg.
+    "cypress:run": "npx cypress run"
+    now if we type npm run cypress:run
+
+if you want one command to start the app (and wait for it to load) and than run the test:
+    for easier operation install: npm install --save-dev start-server-and-test
+    now create a command in package.json:
+    "cypres:e2e": "start-test start http-get://localhost:4200 cypress:run"
+
+
+-Cypress Plugin Retries-
+    if you have cypress version < 5, you have to install a plugin
+    if you have cypress version > 5, it's already there (and you have to uninstall the plugin if it was there in the past)
+    –> package.json –> devDependencies –> "cypres-plugin-retries" –> delete the whole line
+    than in plugins/index.js –> delete require('cypres-plugin-retries...)
+    than in suppor/index.js –> import 'cypress-plugin-retries' delete again
+    than run npm install to update the dependencies (because we made some changes)
+    go to cypress.json again and delete "RETRIES": x, (inside "env"), now configure "retries": x, (outside "env")
+    or "retries": {
+        "runMode": 2,
+        "openMode": 1 //if we use the runner, it'll retry only once
+    }
+
+-Environment Variables-
+    in cypress.json under "env" create:
+    "username": "xxx", or 234
+    "password": "yyy", or 123
+    and in commands.js use the variables we just created, eg.:
+    "email": Cypress.env('username'),
+    "password": Cypress.env('password')
+
+extract api url
+    again under "env" 
+    "apiURL": "https://conduit.productionready.io/"
+    and inside commands.js (in our case) do:    //here is the rest of the api
+    cy.request('POST', Cypress.env('apiURL')+'api/users/login')
+
+-Multiple test report-
+https://www.udemy.com/course/cypress-web-automation-testing-from-zero-to-hero/learn/lecture/18179752#questions
+
+-Shadow root-
+    //you have to find the shadow host
+    cy.get('#app').shadow().find('#cointainer')
